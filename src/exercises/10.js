@@ -96,7 +96,7 @@ function boardReducer(state, action) {
       }
     }
     default:
-      return state
+      throw new Error(`Unhandled type: ${action.type}`)
   }
 }
 
