@@ -5,17 +5,21 @@ import Counter from '../../components/counter'
 
 test('counter increments when the button is clicked', () => {
   // 🐨 create a div to render your component to (💰 document.createElement)
-  //
+  const div = document.createElement('div')
   // 🐨 append the div to document.body (💰 document.body.appendChild)
-  //
+  document.body.appendChild(div)
   // 🐨 use ReactDOM.render to render the <Counter /> to the div
   // 🐨 get a reference to the button (💰 div.querySelector)
-  //
+  ReactDOM.render(<Counter />, div)
+  const counter = div.querySelector('button')
   // 🐨 expect the button's textContent is '0'
   // 🐨 click the button (💰 button.click())
   // 🐨 expect the button's textContent is '1'
-  //
+  expect(counter.textContent).toEqual('0')
+  counter.click()
+  expect(counter.textContent).toEqual('1')
   // 🐨 cleanup by removing the div from the page (💰 document.body.removeChild)
+  document.body.removeChild(div)
 })
 
 // 💯 using .click on a DOM node works fine, but what if you wanted to fire an
