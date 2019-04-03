@@ -120,8 +120,8 @@ test('displays the pokemon', async () => {
 /*
 http://ws.kcd.im/?ws=learn%20react&e=16&em=rcastner@kimmel.com
 */
-test.skip('I submitted my elaboration and feedback', () => {
-  const submitted = false // change this when you've submitted!
+test('I submitted my elaboration and feedback', () => {
+  const submitted = true // change this when you've submitted!
   expect(submitted).toBe(true)
 })
 ////////////////////////////////

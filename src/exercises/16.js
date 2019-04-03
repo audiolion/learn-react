@@ -22,15 +22,27 @@ function fetchPokemonReducer(state, action) {
   switch (action.type) {
     case 'FETCHING': {
       // 🐨 return the state that should exist when fetching starts
-      return state
+      return {
+        loading: true,
+        error: false,
+        ...state,
+      }
     }
     case 'FETCHED': {
       // 🐨 return the state that should exist when the fetch request finishes
-      return state
+      return {
+        loading: false,
+        error: false,
+        pokemon: action.pokemon,
+      }
     }
     case 'FETCH_ERROR': {
       // 🐨 return the state that should exist when the fetch request fails
-      return state
+      return {
+        loading: false,
+        error: true,
+        ...state,
+      }
     }
     default:
       throw new Error(`Unhandled action type: ${action.type}`)
@@ -46,9 +58,22 @@ function FetchPokemon({pokemonName}) {
   //     pokemon => { /* call set state with the pokemon and loading: false */},
   //     error => {/* call set state with the error loading: false */},
   //   )
+  const [state, dispatch] = React.useReducer(fetchPokemonReducer, {
+    loading: true,
+    error: false,
+    pokemon: undefined,
+  })
 
+  const {loading, error, pokemon} = state
   // 🐨 use React.useEffect where the callback should be called whenever the
   // pokemon name changes.
+  React.useEffect(() => {
+    dispatch({type: 'FETCHING'})
+
+    fetchPokemon(pokemonName)
+      .then(pokemon => dispatch({type: 'FETCHED', pokemon}))
+      .catch(() => dispatch('FETCH_ERROR'))
+  }, [pokemonName])
   // 💰 DON'T FORGET THE DEPENDENCIES ARRAY!
   // 🐨 before calling `fetchPokemon`, make sure to dispatch a FETCHING action
   // 🐨 when the promise resolves, dispatch FETCHED and send the pokemon
@@ -58,7 +83,14 @@ function FetchPokemon({pokemonName}) {
   //    1. loading: '...'
   //    2. error: 'ERROR!'
   //    3. pokemon: the JSON.stringified pokemon in a <pre></pre>
-  return 'todo'
+
+  return loading ? (
+    '...'
+  ) : error ? (
+    'ERROR!'
+  ) : (
+    <pre>{JSON.stringify(pokemon, null, 2)}</pre>
+  )
 }
 
 ////////////////////////////////////////////////////////////////////
