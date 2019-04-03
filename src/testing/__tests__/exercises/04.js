@@ -6,10 +6,11 @@ import Login from '../../components/login'
 test('submitting the form calls onSubmit with username and password', () => {
   // 🐨 create a variable called "submittedData" and a handleSubmit function that
   // accepts the data and assigns submittedData to the data that was submitted
-  //
+  let submittedData
+  const handleSubmit = jest.fn(data => (submittedData = data))
   // 🐨 render the login with your handleSubmit function as the onSubmit prop
   // 💰 you'll need the `getByLabelText` and `getByText` utilities from `render`
-  //
+
   // 🐨 get the username and password fields via `getByLabelText`
   // 🐨 use fireEvent.change to fire a change event on the username and
   // password fields.
