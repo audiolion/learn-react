@@ -44,7 +44,7 @@ import React from 'react'
 //
 // 🐨 Make a custom hook called useCounter that accepts the step and
 // initialCount and returns the count and increment functions
-function useCounter({step = 1, initialCount = 0}) {
+function useCounter({step = 1, initialCount = 0} = {}) {
   const [count, setCount] = React.useState(initialCount)
   const increment = () => setCount(currentCount => currentCount + step)
   return [count, increment]
