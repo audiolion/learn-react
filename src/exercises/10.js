@@ -79,21 +79,20 @@ function Board({squares, onClick}) {
 function boardReducer(state, action) {
   switch (action.type) {
     case 'SET_STEP': {
-      const newHistory = state.history.slice(0, action.step + 1)
       return {
         ...state,
         stepNumber: action.step,
-        history: newHistory,
       }
     }
     case 'SELECT_SQUARE': {
       const xIsNext = state.stepNumber % 2 !== 0
-      const squaresCopy = [...state.history[state.stepNumber]]
+      const newHistory = state.history.slice(0, state.stepNumber + 1)
+      const squaresCopy = [...newHistory[newHistory.length - 1]]
       squaresCopy[action.index] = xIsNext ? 'O' : 'X'
       return {
         ...state,
         stepNumber: state.stepNumber + 1,
-        history: [...state.history, squaresCopy],
+        history: [...newHistory, squaresCopy],
       }
     }
     default:
