@@ -14,11 +14,19 @@ import React from 'react'
 // initial state value from localStorage (if available) and keep localStorage
 // updated as the count is incremented.
 
+const useMemoryCounter = ({step = 1, initialCount = 0, key = 'count'} = {}) => {
+  const [count, setCount] = React.useState(
+    Number(window.localStorage.getItem(key) || initialCount),
+  )
+  const increment = () => setCount(c => c + step)
+  React.useEffect(() => window.localStorage.setItem(key, count))
+  return [count, increment]
+}
+
 function Counter({step = 1, initialCount = 0}) {
   // 🐨 initialize the state to the value from localStorage
   // 💰 Number(window.localStorage.getItem('count') || initialCount)
-  const [count, setCount] = React.useState(initialCount)
-  const increment = () => setCount(c => c + step)
+  const [count, increment] = useMemoryCounter({step, initialCount})
   // 🐨 Here's where you'll use `React.useEffect`.
   // The callback should set the `count` in localStorage.
   return <button onClick={increment}>{count}</button>
