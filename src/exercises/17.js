@@ -47,7 +47,7 @@ import React from 'react'
 // re-rendered (unless the props change).
 
 // 🐨 Wrap the "Upper" component here in React.memo
-function Upper({children}) {
+const Upper = React.memo(function Upper({children}) {
   const [count, setCount] = React.useState(0)
   console.log('rendered', children) // don't change this line... (it's used in the tests)
   return (
@@ -56,7 +56,7 @@ function Upper({children}) {
       <button onClick={() => setCount(count + 1)}>{count}</button>
     </div>
   )
-}
+})
 
 ////////////////////////////////////////////////////////////////////
 //                                                                //
