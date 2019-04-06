@@ -47,7 +47,7 @@ function Tilt(props) {
       'max-glare': 0.5,
     })
     return () => tiltNode.vanillaTilt.destroy()
-  })
+  }, [])
   // 💰 like this:
   //
   // 💰 Don't forget to return a cleanup function. VanillaTilt.init will add an
