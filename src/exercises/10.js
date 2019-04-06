@@ -76,40 +76,50 @@ function Board({squares, onClick}) {
   )
 }
 
+function boardReducer(state, action) {
+  const xIsNext = state.stepNumber % 2 === 0
+  switch (action.type) {
+    case 'SET_STEPNUMBER': {
+      return {
+        ...state,
+        stepNumber: action.stepNumber,
+      }
+    }
+    case 'SELECT_SQUARE': {
+      const newHistory = state.history.slice(0, state.stepNumber + 1)
+      const current = newHistory[newHistory.length - 1]
+      const squares = [...current.squares]
+
+      if (calculateWinner(squares) || squares[action.square]) {
+        return
+      }
+
+      squares[action.square] = xIsNext ? 'X' : 'O'
+      const history = [...newHistory, {squares}]
+      return {
+        ...state,
+        history,
+        stepNumber: state.stepNumber + 1,
+      }
+    }
+    default:
+      throw new Error(`Unexpection action: ${action.type}`)
+  }
+}
+
 function Game() {
   // 🐨 Take the next two lines and replace them with a single React.useReducer call
-  const [history, setHistory] = React.useState([{squares: Array(9).fill(null)}])
-  const [stepNumber, setStepNumber] = React.useState(0)
+  const [state, dispatch] = React.useReducer(boardReducer, {
+    history: [{squares: Array(9).fill(null)}],
+    stepNumber: 0,
+  })
 
-  // this is "derived state" (in our original example of this, we actually
-  // stored it in state, but now we can derive that because we're storing the
-  // step number) meaning that it's state you can calculate based on other
-  // state. 💰 You'll need to make this same calculation in the reducer as well
-  // as here.
+  const {history, stepNumber} = state
+
   const xIsNext = stepNumber % 2 === 0
 
-  // 🦉 one of the benefits of a reducer is that it allows you to extract a
-  // bunch of component logic from within the component to the reducer. This
-  // means that your components are a bit simpler and logic is all in the same
-  // place resulting in an easier maintenance situation for you :)
-
-  // the selectSquare function's entire purpose is to perform calculations to
-  // determine what state changes should happen (if any). That's precisely what
-  // the reducer is responsible for!
-  // 🐨 let's move this logic to your reducer and instead call dispatch and let
-  // dispatch handle this to determine the next state.
   function selectSquare(square) {
-    const newHistory = history.slice(0, stepNumber + 1)
-    const current = newHistory[newHistory.length - 1]
-    const squares = [...current.squares]
-
-    if (calculateWinner(squares) || squares[square]) {
-      return
-    }
-
-    squares[square] = xIsNext ? 'X' : 'O'
-    setHistory([...newHistory, {squares}])
-    setStepNumber(newHistory.length)
+    dispatch({type: 'SELECT_SQUARE', square})
   }
 
   const current = history[stepNumber]
@@ -123,11 +133,13 @@ function Game() {
     status = `Next player: ${xIsNext ? 'X' : 'O'}`
   }
 
-  const moves = history.map((step, stepNumber) => {
+  const moves = history.map((_, stepNumber) => {
     const desc = stepNumber ? `Go to move #${stepNumber}` : 'Go to game start'
     return (
       <li key={stepNumber}>
-        <button onClick={() => setStepNumber(stepNumber)}>{desc}</button>
+        <button onClick={() => dispatch({type: 'SET_STEPNUMBER', stepNumber})}>
+          {desc}
+        </button>
       </li>
     )
   })
