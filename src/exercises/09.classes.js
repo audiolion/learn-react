@@ -5,60 +5,56 @@ import React from 'react'
 // 🦉 You've learned all the hooks you need to know to refactor this Board
 // component to hooks.
 
-class Board extends React.Component {
-  state = {squares: Array(9).fill(null), xIsNext: true}
+const Board = props => {
+  const [squares, setSquares] = React.useState(Array(9).fill(null))
+  const [xIsNext, setXIsNext] = React.useState(true)
 
-  selectSquare(square) {
-    const {squares, xIsNext} = this.state
+  function selectSquare(square) {
     if (calculateWinner(squares) || squares[square]) {
       return
     }
     const squaresCopy = [...squares]
     squaresCopy[square] = xIsNext ? 'X' : 'O'
-    this.setState(prevState => ({
-      xIsNext: !prevState.xIsNext,
-      squares: squaresCopy,
-    }))
+    setSquares(squaresCopy)
+    setXIsNext(!xIsNext)
   }
-  renderSquare = i => (
-    <button className="square" onClick={() => this.selectSquare(i)}>
-      {this.state.squares[i]}
+
+  const renderSquare = i => (
+    <button className="square" onClick={() => selectSquare(i)}>
+      {squares[i]}
     </button>
   )
 
-  render() {
-    const {squares, xIsNext} = this.state
-    const winner = calculateWinner(squares)
-    let status
-    if (winner) {
-      status = `Winner: ${winner}`
-    } else if (squares.every(Boolean)) {
-      status = `Scratch: Cat's game`
-    } else {
-      status = `Next player: ${xIsNext ? 'X' : 'O'}`
-    }
-
-    return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    )
+  const winner = calculateWinner(squares)
+  let status
+  if (winner) {
+    status = `Winner: ${winner}`
+  } else if (squares.every(Boolean)) {
+    status = `Scratch: Cat's game`
+  } else {
+    status = `Next player: ${xIsNext ? 'X' : 'O'}`
   }
+
+  return (
+    <div>
+      <div className="status">{status}</div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
+      </div>
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+    </div>
+  )
 }
 
 function Game() {

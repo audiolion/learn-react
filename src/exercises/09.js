@@ -19,6 +19,8 @@ import React from 'react'
 function Board() {
   // 🐨 Use React.useState for both the elements of state you need
   // 💰 To create an empty array with 9 slots, you can use: `Array(9).fill(null)`
+  const [squares, setSquare] = React.useState(() => Array(9).fill(null))
+  const [xIsNext, setXIsNext] = React.useState(true)
 
   // This is the function your square click handler will call. `square` should
   // be an index. So if they click the center square, this will be `5`.
@@ -27,45 +29,66 @@ function Board() {
     // 🐨 first determine if there's already a winner, return early if there is.
     // 💰 there's a `calculateWinner` function already written for you at the
     //    bottom of this file. Fee free to use `calculateWinner(squares)`.
-    //
+    if (calculateWinner(square) || squares[square]) return
     // 🐨 If there's already a value at the square index, then return early.
     // 💰 you can combine this check with the previous using `||`.
-    //
+
     // 🦉 It's typically a bad idea to manipulate state in React
     // 🐨 make a copy of the squares array (💰 `[...squares]` will do it!)
+    const squaresCopy = [...squares]
     // 🐨 Set the value of the square that was selected
     // 💰 `squaresCopy[square] = xIsNext ? 'X' : 'O'`
-    //
+    squaresCopy[square] = xIsNext ? 'X' : 'O'
     // 🐨 toggle the xIsNext state
+    setXIsNext(prev => !prev)
     // 🐨 set the squares to your copy
+    setSquare(squaresCopy)
   }
 
   // let's calculate the status we'll display at the top of the board.
   // 🐨 determine whether there's a winner (💰 `calculateWinner(squares)`).
-  //
+  const winner = calculateWinner(squares)
   // We can have the following statuses:
   // `Winner: ${winner}`
   // `Scratch: Cat's game` (💰 if every square in squares is truthy and there's no winner, then it's a scratch)
   // `Next player: ${xIsNext ? 'X' : 'O'}`
-  //
+  function renderStatus() {
+    let status
+    if (winner) {
+      status = `Winner: ${winner}`
+    }
+    if (!winner && squares.every(tile => tile !== null)) {
+      status = `Scratch: Cat's game`
+    }
+    status = `Next player: ${xIsNext ? 'X' : 'O'}`
+    return <div className="status">{status}</div>
+  }
+
   // 🐨 assign a `status` variable to one of these, and render it above the
   //    board in a div with the className "status"
-  //
+
   // 🐨 return your JSX with this basic structure:
-  // return (
-  //   <div>
-  //     <div className="status">{/* put the status here */}</div>
-  //     {/* you'll need 3 board-rows and each will have 3 squares */}
-  //     <div className="board-row">
-  //       <button className="square" onClick={() => selectSquare(0)}>
-  //         {squares[0]}
-  //       </button>
-  //       {/* etc... */}
-  //     </div>
-  //     {/* etc... */}
-  //   </div>
-  // )
-  return 'todo'
+  const rows = [1, 2, 3]
+  const cols = [0, 2, 5]
+  return (
+    <div>
+      {renderStatus()}
+      {/* you'll need 3 board-rows and each will have 3 squares */}
+      {rows.map(row => (
+        <div className="board-row" key={`row-${row}`}>
+          {cols.map(col => (
+            <button
+              key={`col-${row + col}`}
+              className="square"
+              onClick={() => selectSquare(row + col)}
+            >
+              {squares[row * col]}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 // 💯 See if you can figure out a nice way to avoid all the repetition in the square buttons

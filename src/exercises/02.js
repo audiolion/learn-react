@@ -33,9 +33,13 @@ import React from 'react'
 // 💰 Use the className for the size and style (backgroundColor) for the color
 // 💰 each of the elements should also have the "box" className applied
 
-const smallBox = <div>small lightblue box</div>
-const mediumBox = <div>medium pink box</div>
-const largeBox = <div>large orange box</div>
+const smallBox = <div className="box box--small">small lightblue box</div>
+const mediumBox = <div className="box box--medium">medium pink box</div>
+const largeBox = <div className="box box--large">large orange box</div>
+
+function Box({size}) {
+  return <div className={`box box--${size}`}>{size} box</div>
+}
 
 // 💯 As extra credit, try to make a Box component that renders a div and
 // accepts a `size` prop rather than a className and also merges the `style`
