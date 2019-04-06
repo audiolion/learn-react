@@ -14,6 +14,7 @@ import React from 'react'
 function UsernameForm({onSubmitUsername, getErrorMessage}) {
   // 🐨 add some state (with React.useState) for the error.
   // 💰 initialize it to whatever comes back from `getErrorMessage('')`
+  const [errorMessage, setErrorMessage] = React.useState(getErrorMessage(``))
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -26,6 +27,9 @@ function UsernameForm({onSubmitUsername, getErrorMessage}) {
   // 💰 remember that your change handler will get called with an event that
   // has a `target` property that references the DOM node that is responsible
   // for the event, so you can get the value from event.target.value
+  function handleChange(event) {
+    setErrorMessage(getErrorMessage(event.target.value))
+  }
 
   // 🐨 add an `onChange` handler to the `input`
   return (
@@ -35,11 +39,15 @@ function UsernameForm({onSubmitUsername, getErrorMessage}) {
         id="name-input"
         type="text"
         name="username"
+        onChange={handleChange}
         // 🐨 add your onChange handler here
       />
       {/* 🐨 if there's an error, then render it in a div here */}
+      {errorMessage && <div style={{color: 'red'}}>{errorMessage}</div>}
       {/* 🐨 add a disabled prop to this button that's set to true if there's an error */}
-      <button type="submit">Submit</button>
+      <button type="submit" disabled={errorMessage}>
+        Submit
+      </button>
     </form>
   )
 }
