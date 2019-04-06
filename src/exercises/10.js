@@ -76,43 +76,17 @@ function Board({squares, onClick}) {
   )
 }
 
-function boardReducer(state, action) {
-  switch (action.type) {
-    case 'SET_STEP': {
-      return {
-        ...state,
-        stepNumber: action.step,
-      }
-    }
-    case 'SELECT_SQUARE': {
-      const xIsNext = state.stepNumber % 2 !== 0
-      const newHistory = state.history.slice(0, state.stepNumber + 1)
-      const squaresCopy = [...newHistory[newHistory.length - 1]]
-      squaresCopy[action.index] = xIsNext ? 'O' : 'X'
-      return {
-        ...state,
-        stepNumber: state.stepNumber + 1,
-        history: [...newHistory, squaresCopy],
-      }
-    }
-    default:
-      throw new Error(`Unhandled type: ${action.type}`)
-  }
-}
-
 function Game() {
   // 🐨 Take the next two lines and replace them with a single React.useReducer call
-  const [state, dispatch] = React.useReducer(boardReducer, {
-    stepNumber: 0,
-    history: [Array(9).fill(null)],
-  })
+  const [history, setHistory] = React.useState([{squares: Array(9).fill(null)}])
+  const [stepNumber, setStepNumber] = React.useState(0)
 
   // this is "derived state" (in our original example of this, we actually
   // stored it in state, but now we can derive that because we're storing the
   // step number) meaning that it's state you can calculate based on other
   // state. 💰 You'll need to make this same calculation in the reducer as well
   // as here.
-  const xIsNext = state.stepNumber % 2 === 0
+  const xIsNext = stepNumber % 2 === 0
 
   // 🦉 one of the benefits of a reducer is that it allows you to extract a
   // bunch of component logic from within the component to the reducer. This
@@ -125,38 +99,46 @@ function Game() {
   // 🐨 let's move this logic to your reducer and instead call dispatch and let
   // dispatch handle this to determine the next state.
   function selectSquare(square) {
-    dispatch({type: 'SELECT_SQUARE', index: square})
+    const newHistory = history.slice(0, stepNumber + 1)
+    const current = newHistory[newHistory.length - 1]
+    const squares = [...current.squares]
+
+    if (calculateWinner(squares) || squares[square]) {
+      return
+    }
+
+    squares[square] = xIsNext ? 'X' : 'O'
+    setHistory([...newHistory, {squares}])
+    setStepNumber(newHistory.length)
   }
 
-  // If you've made it this far and the tests are still passing and the app
-  // still works then you're done! 🎉 Don't forget the 💯 below!
-
-  const current = state.history[state.stepNumber]
-  const winner = calculateWinner(current)
+  const current = history[stepNumber]
+  const winner = calculateWinner(current.squares)
   let status
   if (winner) {
     status = `Winner: ${winner}`
-  } else if (current.every(Boolean)) {
+  } else if (current.squares.every(Boolean)) {
     status = `Scratch: Cat's game`
   } else {
     status = `Next player: ${xIsNext ? 'X' : 'O'}`
   }
 
-  const moves = state.history.map((step, stepNumber) => {
+  const moves = history.map((step, stepNumber) => {
     const desc = stepNumber ? `Go to move #${stepNumber}` : 'Go to game start'
     return (
       <li key={stepNumber}>
-        <button onClick={() => dispatch({type: 'SET_STEP', step: stepNumber})}>
-          {desc}
-        </button>
+        <button onClick={() => setStepNumber(stepNumber)}>{desc}</button>
       </li>
     )
   })
 
+  // If you've made it this far and the tests are still passing and the app
+  // still works then you're done! 🎉 Don't forget the 💯 below!
+
   return (
     <div className="game">
       <div className="game-board">
-        <Board onClick={selectSquare} squares={current} />
+        <Board onClick={selectSquare} squares={current.squares} />
       </div>
       <div className="game-info">
         <div>{status}</div>
